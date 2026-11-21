@@ -3,7 +3,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0e1a2b">
 <link rel="manifest" href="manifest.json"><link rel="icon" href="icon.svg">
-<title>Schalmei Trainer</title>
+<title>Mölodie</title><meta name="apple-mobile-web-app-title" content="Mölodie">
 <style>
 :root{--bg:#0e1a2b;--card:#17263d;--ink:#eef2f8;--mut:#8fa1ba;--gold:#f2b84b;--teal:#3dd6c3;--bad:#ff6b6b;--ok:#5be38a;color-scheme:dark}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -12,8 +12,8 @@ button,select,input{font:inherit;color:inherit}
 button,select{background:var(--card);border:1px solid #2c4366;border-radius:12px;padding:.6rem .9rem}
 input{background:#0a1322;border:1px solid #2c4366;border-radius:8px;padding:.4rem;width:100%}
 input[type=range]{padding:0}input[type=checkbox]{width:auto}
-.tab{display:none;padding:.7rem .7rem 5rem}.tab.on{display:block}
-#play.on{display:flex;flex-direction:column;gap:.35rem;height:100dvh;padding-bottom:calc(3.6rem + env(safe-area-inset-bottom))}
+.tab{display:none;padding:.7rem}.tab.on{display:block}
+#play.on{display:flex;flex-direction:column;gap:.35rem;height:100dvh;padding-bottom:calc(.5rem + env(safe-area-inset-bottom))}
 .row{display:flex;gap:.5rem;align-items:center}.row>*{flex:1}.row>button{flex:0 0 auto}
 .seg{display:flex;background:var(--card);border-radius:12px;padding:3px;gap:3px}
 .seg button{flex:1;border:0;background:none;padding:.5rem}
@@ -52,7 +52,7 @@ details{background:linear-gradient(#1b2f4d,#14233a);box-shadow:0 3px 10px #0005}
 #fall{background:linear-gradient(#0b1626,#122641);box-shadow:inset 0 0 22px #0009,0 0 0 1px #28446b}
 #valves{position:relative;padding:.2rem 0 .3rem}
 #tcur{position:absolute;display:none;width:3px;margin-left:-1px;border-radius:2px;background:#e8a22c;box-shadow:0 0 8px #e8a22c;pointer-events:none;z-index:2}
-#score{scrollbar-width:none}#score.tv{overflow:hidden;touch-action:none;height:clamp(84px,12dvh,104px)}#tabv{will-change:transform}#score::-webkit-scrollbar{display:none}
+#score{scrollbar-width:none}#score.tv{overflow:hidden;touch-action:none;height:clamp(100px,14dvh,128px)}#tabv{will-change:transform}#score::-webkit-scrollbar{display:none}
 .seg button{padding:.45rem .2rem;font-size:.85rem}
 .row>.sw{flex:none}
 .sw{display:inline-flex;align-items:center;gap:.45rem;font-size:.75rem;color:var(--mut)}
@@ -83,6 +83,15 @@ details{background:linear-gradient(#1b2f4d,#14233a);box-shadow:0 3px 10px #0005}
 #valves .on .fb{background:radial-gradient(circle at 38% 32%,#fff,var(--c) 72%);box-shadow:0 0 0 5px #c9942f,0 0 0 7px #6e4810,0 0 22px var(--c)}
 #valves .tgt .fb{box-shadow:0 0 0 5px var(--c),0 0 0 7px #6e4810,0 0 18px var(--c)}
 #tcur{will-change:transform}
+#home.on{display:flex;min-height:100dvh;align-items:center;justify-content:center}
+.hm{width:100%;max-width:440px}
+.logo{font:800 2.8rem system-ui;text-align:center;color:var(--gold);letter-spacing:.04em;text-shadow:0 2px 16px #e8a22c55}
+.hm .mut{text-align:center}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-top:1.8rem}
+.tiles button{display:flex;flex-direction:column;align-items:center;gap:.6rem;padding:1.7rem .5rem;font-size:1.1rem;font-weight:700;border-radius:18px;border:1px solid #3a5885;background:linear-gradient(#22406b,#162a47);color:#eef2f8;box-shadow:0 6px 16px #0007}
+.tiles span{font-size:2.3rem;line-height:1.1}.tiles svg{color:var(--gold)}
+.hd{display:flex;align-items:center;gap:.7rem;margin-bottom:.8rem}.hd b{font:800 1.2rem system-ui;letter-spacing:.05em;color:var(--gold)}
+.bk{padding:.5rem .75rem;line-height:0;color:var(--gold);border-color:#e8a22c99;background:linear-gradient(#2a4469,#17283f)}
 #valves button{aspect-ratio:1/.98}
 #valves .vb{left:3%;right:3%;top:0;aspect-ratio:1/.78;border-radius:50%;display:grid;place-items:center;background:repeating-conic-gradient(#6f5116 0 2.4deg,#f3d886 2.4deg 4.8deg);box-shadow:0 0 0 2px #4f3810;transition:transform .05s}
 #valves .vb::before{content:"";position:absolute;inset:9% 7%;border-radius:50%;background:conic-gradient(from 210deg,#f8e19a,#a07420,#f8e19a,#b58a2c,#f8e19a);box-shadow:inset 0 0 0 2px #6a4a12}
@@ -101,8 +110,10 @@ details{background:linear-gradient(#1b2f4d,#14233a);box-shadow:0 3px 10px #0005}
 #valves .tgt{box-shadow:0 8px 14px #000a,0 0 0 4px var(--c),0 0 18px var(--c)}
 #valves button{--c:#e9b44c;color:#6b4a12}
 </style></head><body>
-<main id="play" class="tab on">
- <div class="row"><select id="song"></select><select id="voice"></select></div>
+<main id="home" class="tab on"><div class="hm"><div class="logo">Mölodie</div><p class="mut" style="margin:.3rem 0 0">Spielen · Stimmen · Takt halten</p>
+ <div class="tiles"><button data-go="play"><span>🎺</span>Üben</button><button data-go="tuner"><svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v8a4 4 0 0 0 8 0V3M12 15v6"/></svg>Stimmgerät</button><button data-go="metro"><span>⏱</span>Metronom</button><button data-go="cfg"><span>⚙</span>Griffe</button></div></div></main>
+<main id="play" class="tab">
+ <div class="row"><button class="bk" aria-label="Startseite"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg></button><select id="song"></select><select id="voice"></select></div>
  <div class="row"><div class="seg" id="mode"><button data-v="watch">Hören</button><button data-v="practise">Üben</button><button data-v="play">Mitspielen</button></div><details id="dt"><summary>Loops und Audio</summary><div class="pnl">
   <div class="row" style="margin:.2rem 0 .7rem"><label class="sw"><input type="checkbox" id="lp"><span>Loop</span></label><label class="sl">von Takt<input id="la" type="number" min="1" value="1"></label><label class="sl">bis Takt<input id="lb" type="number" min="1" value="8"></label></div>
   <label class="sw" style="margin:.2rem 0 .7rem"><input type="checkbox" id="stems"><span>Notenhälse in der Tabulatur</span></label>
@@ -112,14 +123,13 @@ details{background:linear-gradient(#1b2f4d,#14233a);box-shadow:0 3px 10px #0005}
  <div id="fwrap"><canvas id="fall"></canvas><div id="fb"><span id="tg"></span><b id="fr"></b></div></div>
  <div id="valves"><button data-v="3"><i class="sm"></i><i class="sd"></i><i class="vb"><b>3</b></i></button><button data-v="2"><i class="sm"></i><i class="sd"></i><i class="vb"><b>2</b></i></button><button data-v="1"><i class="sm"></i><i class="sd"></i><i class="vb"><b>1</b></i></button></div>
 </main>
-<main id="tuner" class="tab"><div class="big" id="hz">– Hz</div><div id="nn">A = 432 Hz</div>
+<main id="tuner" class="tab"><div class="hd"><button class="bk" aria-label="Startseite"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg></button><b>Mölodie</b></div><div class="big" id="hz">– Hz</div><div id="nn">A = 432 Hz</div>
  <p style="text-align:center"><button id="mic">Mikrofon starten</button></p>
  <h3>Referenztöne</h3><div id="refs" class="grid"></div></main>
-<main id="metro" class="tab"><div class="big" id="bpmv">100</div><div class="mut">Schläge pro Minute</div>
+<main id="metro" class="tab"><div class="hd"><button class="bk" aria-label="Startseite"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg></button><b>Mölodie</b></div><div class="big" id="bpmv">100</div><div class="mut">Schläge pro Minute</div>
  <input type="range" id="bpm" min="30" max="240" value="100" style="margin:1rem 0"><div id="dots"></div>
  <div class="row"><button id="tap">Tippen</button><select id="beats"><option>2</option><option>3</option><option>4</option><option>6</option></select><button id="mgo">Start</button></div></main>
-<main id="cfg" class="tab"></main>
-<nav><button data-t="play" class="a">🎺 Üben</button><button data-t="tuner"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><path d="M8 3v8a4 4 0 0 0 8 0V3M12 15v6"/></svg> Stimmgerät</button><button data-t="metro">⏱ Metronom</button><button data-t="cfg">⚙ Griffe</button></nav>
+<main id="cfg" class="tab"><div class="hd"><button class="bk" aria-label="Startseite"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg></button><b>Mölodie</b></div><div id="cfgc"></div></main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/opensheetmusicdisplay@1.8.9/build/opensheetmusicdisplay.min.js"></script>
 <script>
@@ -264,16 +274,16 @@ $('#score').onclick=e=>{if(!pos.length||!S.mel.length)return;
   pos.forEach((p,k)=>{const d=Math.abs(p[1]-row*TG.RH)>1?1e9:Math.abs(p[0]-x);if(d<bd){bd=d;b=k}});if(b>=0)t=ts[b];jump(Math.max(0,t));return}const sc=$('#score'),r=sc.getBoundingClientRect(),x=e.clientX-r.left+sc.scrollLeft,y=e.clientY-r.top+sc.scrollTop;let b=-1,bd=1e9;
  pos.forEach((p,i)=>{const dy=y<p[1]?p[1]-y:y>p[1]+p[2]?y-p[1]-p[2]:0,d=dy*4+Math.abs(x-p[0]);if(d<bd){bd=d;b=i}});if(b>=0)jump(ts[b])};
 let TG={per:1,mw:200,RH:90,rows:1,ty:27,sp:18},lastT=null,TO=0,lastOT=-1;
-function buildTab(){const tp=S.parts[S.tabIdx],sc=$('#score'),nM=S.ms.length-1,RH=Math.max(80,sc.clientHeight),z=Math.min(1.05,RH/104),ty=30*z,sp=18*z,fz=Math.max(13,15*z),N=[...tp.tn].sort((a,b)=>a.s-b.s);
+function buildTab(){const tp=S.parts[S.tabIdx],sc=$('#score'),nM=S.ms.length-1,RH=Math.max(80,sc.clientHeight),z=Math.min(1.1,RH/100),ty=26*z,sp=24*z,fz=Math.max(19,21*z),N=[...tp.tn].sort((a,b)=>a.s-b.s);
  let g=4;for(let k=1;k<N.length;k++){const d=N[k].s-N[k-1].s;if(d>.12&&d<g)g=d}
- const len=(S.ms[Math.min(2,nM)]-S.ms[1])||(S.ms[1]-S.ms[0]),mw=Math.max(190,Math.min(560,24+len/g*17)),W=nM*mw;
+ const len=(S.ms[Math.min(2,nM)]-S.ms[1])||(S.ms[1]-S.ms[0]),mw=Math.max(200,Math.min(640,24+len/g*22)),W=nM*mw;
  TG={per:nM,mw,RH,rows:1,ty,sp,W};lastT=null;TO=0;$('#tabv').style.transform='';let h='',i=0;ts=[];pos=[];
  for(let k=0;k<3;k++)h+=`<line x1="0" x2="${W}" y1="${ty+k*sp}" y2="${ty+k*sp}" stroke="#8b8573"/>`;
  for(let k=0;k<=nM;k++)h+=`<line x1="${k*mw}" x2="${k*mw}" y1="${ty}" y2="${ty+2*sp}" stroke="#5c574a" stroke-width="${k==nM?2:1}"/>`;
  for(let k=0;k<nM;k++)h+=`<text x="${k*mw+4}" y="${ty-8}" font-size="11" fill="#8b8573">${k+1}</text>`;
  for(const n of N){while(i<nM-1&&n.s>=S.ms[i+1]-1e-6)i++;const x=i*mw+12+(n.s-S.ms[i])/(S.ms[i+1]-S.ms[i])*(mw-24);
   for(const[b,f]of n.f){const yy=ty+(b-1)*sp;h+=`<rect x="${x-fz*.55}" y="${yy-fz*.6}" width="${fz*1.1}" height="${fz*1.2}" fill="#f8f4ea"/><text x="${x}" y="${yy}" text-anchor="middle" dominant-baseline="central" font-size="${fz}" font-weight="700" fill="#1b1200">${f}</text>`}
-  if(P.stems&&n.d<4){const sy=ty+2*sp+10*z,sl=20*z;h+=`<line x1="${x}" x2="${x}" y1="${sy}" y2="${sy+sl}" stroke="#1b1200" stroke-width="1.6"/>`;
+  if(P.stems&&n.d<4){const sy=ty+2*sp+9*z,sl=16*z;h+=`<line x1="${x}" x2="${x}" y1="${sy}" y2="${sy+sl}" stroke="#1b1200" stroke-width="1.6"/>`;
    const fl=n.d<.49?2:n.d<.99?1:0;for(let k=0;k<fl;k++)h+=`<line x1="${x}" x2="${x+5}" y1="${sy+sl-k*5*z}" y2="${sy+sl-6*z-k*5*z}" stroke="#1b1200" stroke-width="2"/>`;
    if([.75,1.5,3,.375].some(v=>Math.abs(n.d-v)<.01))h+=`<circle cx="${x+5}" cy="${sy+sl-3}" r="2" fill="#1b1200"/>`}
   ts.push(n.s);pos.push([x,0,RH-8])}
@@ -337,7 +347,7 @@ const pm=x=>{const i=BASE.indexOf(x.m-off()),f=i<0?0:P.fo[P.ins][i];return f>0?6
 const near=f=>{let b=0,bd=1e9;BASE.forEach((_,i)=>{const d=Math.abs(Math.log2(f/tf(P.ins,i)));if(d<bd){bd=d;b=i}});return bd<.09?tn(P.ins,b):nm(Math.round(69+12*Math.log2(f/(P.a4||432))))};
 function cfg(){let h=`<p class="mut">Ventil 3 = links, Ventil 1 = rechts. Griff z. B. 0, 1, 12, 123. Leere Felder = Standardwert.</p><label class="sl" style="max-width:10rem">Kammerton A (Hz)<input data-s="a4" type="number" step="0.1" value="${P.a4}"></label>`;
  [['sop','Sopran'],['bar','Bariton']].forEach(([k,n])=>{h+=`<h3>${n}</h3><div class="tb"><b>Ton</b><b>Hz</b><b>Griff</b>`+BASE.map((b,i)=>`<input data-k="${k}" data-i="${i}" data-r="n" value="${tn(k,i)}"><input data-k="${k}" data-i="${i}" data-r="f" type="number" step="0.1" value="${tf(k,i).toFixed(1)}"><input data-k="${k}" data-i="${i}" data-r="g" value="${P.g[k][i]}" inputmode="numeric">`).join('')+'</div>'});
- $('#cfg').innerHTML=h+`<h3>Wertung im Play-Modus</h3><div class="row"><label>Toleranz (ms)<input data-s="tol" type="number" value="${P.tol}"></label><label>Halten (%)<input data-s="hold" type="number" value="${P.hold}"></label></div><p><button id="rs">Alles zurücksetzen</button></p>`}
+ $('#cfgc').innerHTML=h+`<h3>Wertung im Play-Modus</h3><div class="row"><label>Toleranz (ms)<input data-s="tol" type="number" value="${P.tol}"></label><label>Halten (%)<input data-s="hold" type="number" value="${P.hold}"></label></div><p><button id="rs">Alles zurücksetzen</button></p>`}
 $('#cfg').onchange=e=>{const t=e.target,d=t.dataset;
  if(d.k){const k=d.k,i=+d.i;if(d.r=='g')t.value=P.g[k][i]=norm(t.value);else if(d.r=='n'){P.nmo[k][i]=t.value.trim();t.value=tn(k,i)}else{const v=+t.value;P.fo[k][i]=v>20?v:0;t.value=tf(k,i).toFixed(1)}}
  else if(d.s){P[d.s]=+t.value||P[d.s];if(d.s=='a4'){cfg();refs();$('#nn').textContent='A = '+P.a4+' Hz'}}save()};
@@ -346,7 +356,15 @@ $('#cfg').onclick=e=>{if(e.target.id=='rs'){P.g={bar:[...DEF],sop:[...DEF]};P.nm
 // ---- Start
 function seg(id,k,f){const r=()=>$$('#'+id+' button').forEach(b=>b.classList.toggle('a',b.dataset.v==P[k]));r();$$('#'+id+' button').forEach(b=>b.onclick=()=>{P[k]=b.dataset.v;save();r();f()})}
 seg('mode','mode',stopAll);refs();cfg();
-$$('nav button').forEach(b=>b.onclick=()=>{$$('.tab').forEach(t=>t.classList.toggle('on',t.id==b.dataset.t));$$('nav button').forEach(x=>x.classList.toggle('a',x==b));if(b.dataset.t!='play'&&S.run){S.run=0;stopMel();AU&&AU.pause();$('#go').textContent='▶'}});
-(async()=>{try{const l=await(await fetch('songs/index.json')).json();SL=l;$('#song').innerHTML=l.map((s,i)=>`<option value="${i}">${s.title}</option>`).join('');$('#song').onchange=()=>open(SL[+$('#song').value]);if(l.length)open(l[0])}catch{S.msg='songs/index.json fehlt'}})();
+let started=0;
+function show(t,push){$$('.tab').forEach(x=>x.classList.toggle('on',x.id==t));
+ if(t!='play'&&S.run){S.run=0;stopMel();AU&&AU.pause();$('#go').textContent='▶'}
+ if(t=='play'){if(!started){started=1;if(SL.length)open(SL[+$('#song').value||0])}lanesDirty()}
+ if(push){try{history.pushState({t},'')}catch{}}scrollTo(0,0)}
+$$('[data-go]').forEach(b=>b.onclick=()=>show(b.dataset.go,1));
+$$('.bk').forEach(b=>b.onclick=()=>{if(history.state&&history.state.t&&history.state.t!='home')history.back();else show('home')});
+addEventListener('popstate',e=>show(e.state&&e.state.t||'home'));
+try{history.replaceState({t:'home'},'')}catch{}
+(async()=>{try{const l=await(await fetch('songs/index.json')).json();SL=l;$('#song').innerHTML=l.map((s,i)=>`<option value="${i}">${s.title}</option>`).join('');$('#song').onchange=()=>open(SL[+$('#song').value]);if(started&&l.length)open(l[0])}catch{S.msg='songs/index.json fehlt'}})();
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js');
 </script></body></html>

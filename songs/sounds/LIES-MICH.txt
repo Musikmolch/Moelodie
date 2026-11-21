@@ -1,0 +1,5 @@
+Hier koennen eigene Schlagzeug-Klaenge liegen.
+Dateinamen (als .wav oder .mp3): kick, snare, tom, hat, crash
+Beispiel: kick.wav, snare.wav, hat.mp3
+Fehlt eine Datei, nimmt die App fuer diesen Klang den eingebauten Ton.
+Tipp: kurze Dateien (0,2 bis 1,5 Sekunden), moeglichst gleich laut.

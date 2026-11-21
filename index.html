@@ -2,7 +2,7 @@
 <html lang="de"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0e1a2b">
-<link rel="manifest" href="manifest.json"><link rel="icon" href="icon.svg">
+<link rel="manifest" href="manifest.json"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-180.png">
 <title>Mölodie</title><meta name="apple-mobile-web-app-title" content="Mölodie">
 <style>
 :root{--bg:#0e1a2b;--card:#17263d;--ink:#eef2f8;--mut:#8fa1ba;--gold:#f2b84b;--teal:#3dd6c3;--bad:#ff6b6b;--ok:#5be38a;color-scheme:dark}
@@ -97,8 +97,8 @@ details{background:linear-gradient(#1b2f4d,#14233a);box-shadow:0 3px 10px #0005}
 #fnote{font:800 5.2rem/1 system-ui;color:var(--gold);text-shadow:0 2px 16px #e8a22c44}
 #finfo{color:var(--mut);margin-top:.5rem}
 #fvslot{margin-top:auto}
-#blow{font-weight:700;padding:.7rem 1.1rem;touch-action:none;user-select:none;-webkit-user-select:none}
-#blow.on{background:linear-gradient(#ffd887,#e8a22c);color:#241800}
+#zero{display:block;width:100%;margin-top:.5rem;padding:.9rem;font-size:1.1rem;font-weight:800;letter-spacing:.03em;color:#3a2705;border:0;border-radius:16px;background:linear-gradient(#f3d886,#c9942f);box-shadow:0 4px 10px #000a,inset 0 1px #fff8;touch-action:none;user-select:none;-webkit-user-select:none}
+#zero.on{background:linear-gradient(#fff3c4,#e8a22c);transform:translateY(2px);box-shadow:0 0 22px #e8c46a}
 .bk{padding:.5rem .75rem;line-height:0;color:var(--gold);border-color:#e8a22c99;background:linear-gradient(#2a4469,#17283f)}
 #valves button{aspect-ratio:1/.98}
 #valves .vb{left:3%;right:3%;top:0;aspect-ratio:1/.78;border-radius:50%;display:grid;place-items:center;background:repeating-conic-gradient(#6f5116 0 2.4deg,#f3d886 2.4deg 4.8deg);box-shadow:0 0 0 2px #4f3810;transition:transform .05s}
@@ -135,11 +135,11 @@ details{background:linear-gradient(#1b2f4d,#14233a);box-shadow:0 3px 10px #0005}
 <main id="free" class="tab"><div class="hd"><button class="bk" aria-label="Startseite"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg></button><b>Frei Schnauze</b></div>
  <div class="seg" id="fseg"><button data-v="sop">Sopran</button><button data-v="bar">Bariton</button></div>
  <div id="fdisp"><div id="fnote">–</div><div id="finfo">Drücke die Ventile und probiere Töne aus</div></div>
- <div class="row" style="justify-content:center;gap:1rem"><button id="blow">Blasen (für Griff 0)</button><label class="sw"><input type="checkbox" id="sus"><span>Dauerton</span></label><label class="sw"><span>🫱</span><input type="checkbox" id="hand2"><span>🫲</span></label></div>
- <div id="fvslot"></div></main>
+ <div class="row" style="justify-content:center"><label class="sw"><span>🫱</span><input type="checkbox" id="hand2"><span>🫲</span></label></div>
+ <div id="fvslot"><button id="zero">0</button></div></main>
 <main id="tuner" class="tab"><div class="hd"><button class="bk" aria-label="Startseite"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg></button><b>Mölodie</b></div><div class="big" id="hz">– Hz</div><div id="nn">A = 432 Hz</div>
  <p style="text-align:center"><button id="mic">Mikrofon starten</button></p>
- <h3>Referenztöne</h3><div id="refs" class="grid"></div></main>
+ <h3>Referenztöne</h3><div id="refs"></div></main>
 <main id="metro" class="tab"><div class="hd"><button class="bk" aria-label="Startseite"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg></button><b>Mölodie</b></div><div class="big" id="bpmv">100</div><div class="mut">Schläge pro Minute</div>
  <input type="range" id="bpm" min="30" max="240" value="100" style="margin:1rem 0"><div id="dots"></div>
  <div class="row"><button id="tap">Tippen</button><select id="beats"><option>2</option><option>3</option><option>4</option><option>6</option></select><button id="mgo">Start</button></div></main>
@@ -149,10 +149,10 @@ details{background:linear-gradient(#1b2f4d,#14233a);box-shadow:0 3px 10px #0005}
 <script>
 const Soundfont={instrument:async(c,n)=>({play(m,w,o={}){const t=w||c.currentTime,f=(P.a4||432)*2**((m-69)/12),s=c.createOscillator(),g=c.createGain(),l=c.createBiquadFilter(),tr=n=='trumpet',mb=n=='marimba',v=(o.gain||1)*.16;
 s.type=tr?'sawtooth':mb?'sine':'triangle';s.frequency.value=f;l.type='lowpass';l.frequency.value=tr?f*4:f*6;
-g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+(tr?.04:.005));if(!tr)g.gain.setTargetAtTime(0,t+.02,mb?.25:.6);
+g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+(tr?.025:.005));if(!tr)g.gain.setTargetAtTime(0,t+.02,mb?.25:.6);
 s.connect(l);l.connect(g);g.connect(c.destination);s.start(t);
 if(o.duration){g.gain.setTargetAtTime(0,t+o.duration,.08);s.stop(t+o.duration+.6)}
-return{stop(x){x=x||c.currentTime;g.gain.setTargetAtTime(0,x,.03);try{s.stop(x+.3)}catch{}}}}})};
+return{stop(x,k){x=x||c.currentTime;k=k||.03;g.gain.setTargetAtTime(0,x,k);try{s.stop(x+k*8)}catch{}}}}})};
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const BASE=[55,57,59,60,62,64,65,67],DEF=['0','1','2','12','3','13','23','123'];
 const NN=['C','Cis','D','Dis','E','F','Fis','G','Gis','A','B','H'],nm=m=>NN[m%12]+(Math.floor(m/12)-1),frq=m=>(P.a4||432)*2**((m-69)/12);
@@ -163,7 +163,7 @@ const save=()=>{try{localStorage.setItem('sch',JSON.stringify(P))}catch{}};
 const off=()=>P.ins=='sop'?12:0,grip=m=>{const i=BASE.indexOf(m-off());return i<0?null:P.g[P.ins][i]};
 const gr=n=>n.g||grip(n.m);
 const pr=new Set(),cb=()=>[...pr].sort().join('')||'0';
-let ctx,I={},NB=null,ts=[],ci=0,lt=performance.now(),AU=null,SL=[],pos=[],TV=0,tcSet=0;
+let ctx,I={},NB=null,SMP={},ts=[],ci=0,lt=performance.now(),AU=null,SL=[],pos=[],TV=0,tcSet=0;
 const S={parts:[],ms:[0],bq:1.5,mel:[],acc:[],vis:[],aud:[],t:-1,run:0,mi:0,ai:0,pts:0,cnt:0,node:null,melEnd:0,cm:0,fb:null,msg:'',end:0};
 const osmd=new opensheetmusicdisplay.OpenSheetMusicDisplay('osmdc',{autoResize:false,drawTitle:false,drawPartNames:false,followCursor:false});
 osmd.zoom=innerWidth<600?.6:.8;
@@ -171,16 +171,25 @@ osmd.zoom=innerWidth<600?.6:.8;
 // ---- Ventile
 $$('#valves button').forEach(b=>{const v=b.dataset.v;b.onpointerdown=e=>{e.preventDefault();pr.add(v);b.setPointerCapture(e.pointerId)};b.onpointerup=b.onpointercancel=()=>pr.delete(v);b.oncontextmenu=e=>e.preventDefault()});
 const kv=e=>{const k=(/^(?:Numpad|Digit)([123])$/.exec(e.code)||[])[1];return k&&(P.hand=='l'?k:{1:'3',2:'2',3:'1'}[k])};
-onkeydown=e=>{const v=kv(e);if(v&&!/^(number|text)$/.test(e.target.type)){e.preventDefault();pr.add(v)}};onkeyup=e=>{const v=kv(e);v&&pr.delete(v)};
+const k0=e=>/^(Numpad|Digit)0$/.test(e.code),ntx=e=>/^(number|text)$/.test(e.target.type);
+onkeydown=e=>{const v=kv(e);if(v&&!ntx(e)){e.preventDefault();pr.add(v)}if(k0(e)&&!ntx(e)){e.preventDefault();FS.blow=1;$('#zero').classList.add('on')}};
+onkeyup=e=>{const v=kv(e);v&&pr.delete(v);if(k0(e)){FS.blow=0;$('#zero').classList.remove('on')}};
 
 // ---- Audio
-async function aud(){ctx=ctx||new(window.AudioContext||webkitAudioContext)();await ctx.resume();
+async function aud(){ctx=ctx||new(window.AudioContext||webkitAudioContext)();await ctx.resume();loadSmp();
  if(!I.p){S.msg='Lade Klänge …';try{[I.p,I.m,I.t]=await Promise.all(['acoustic_grand_piano','marimba','trumpet'].map(n=>Soundfont.instrument(ctx,n)))}catch(e){S.msg='Klänge nicht ladbar – Internet prüfen';throw e}S.msg=''}}
-function drum(k,at){const n=at||ctx.currentTime,g=ctx.createGain();g.connect(ctx.destination);
- if(k=='tom'){const o=ctx.createOscillator();o.frequency.setValueAtTime(160,n);o.frequency.exponentialRampToValueAtTime(55,n+.15);o.connect(g);g.gain.setValueAtTime(.8,n);g.gain.exponentialRampToValueAtTime(.001,n+.25);o.start(n);o.stop(n+.3);return}
- NB=NB||(()=>{const b=ctx.createBuffer(1,ctx.sampleRate*.2,ctx.sampleRate),a=b.getChannelData(0);for(let i=0;i<a.length;i++)a[i]=Math.random()*2-1;return b})();
- const s=ctx.createBufferSource(),f=ctx.createBiquadFilter(),h=k=='hat';s.buffer=NB;f.type='highpass';f.frequency.value=h?7000:1500;s.connect(f);f.connect(g);
- g.gain.setValueAtTime(h?.25:.6,n);g.gain.exponentialRampToValueAtTime(.001,n+(h?.05:.15));s.start(n)}
+async function loadSmp(){for(const k of['kick','snare','tom','hat','crash']){if(SMP[k]!==undefined)continue;SMP[k]=null;for(const e of['wav','mp3']){try{const r=await fetch('sounds/'+k+'.'+e);if(!r.ok)continue;SMP[k]=await ctx.decodeAudioData(await r.arrayBuffer());break}catch{}}}}
+function drum(k,at){const n=at||ctx.currentTime,V=.32;
+ if(SMP[k]){const s=ctx.createBufferSource(),x=ctx.createGain();s.buffer=SMP[k];x.gain.value=.8;s.connect(x);x.connect(ctx.destination);s.start(n);return}
+ const nb=()=>NB=NB||(()=>{const b=ctx.createBuffer(1,ctx.sampleRate*.8,ctx.sampleRate),a=b.getChannelData(0);for(let i=0;i<a.length;i++)a[i]=Math.random()*2-1;return b})();
+ const gn=(v,d)=>{const x=ctx.createGain();x.gain.setValueAtTime(v*V,n);x.gain.exponentialRampToValueAtTime(.0008,n+d);x.connect(ctx.destination);return x};
+ const nz=(t,f,q,v,d)=>{const s=ctx.createBufferSource(),b=ctx.createBiquadFilter(),x=gn(v,d);s.buffer=nb();b.type=t;b.frequency.value=f;b.Q.value=q;s.connect(b);b.connect(x);s.start(n);s.stop(n+d+.03)};
+ const tn_=(t,f0,f1,v,d)=>{const o=ctx.createOscillator(),x=gn(v,d);o.type=t;o.frequency.setValueAtTime(f0,n);o.frequency.exponentialRampToValueAtTime(f1,n+d*.5);o.connect(x);o.start(n);o.stop(n+d+.03)};
+ if(k=='kick'){tn_('sine',130,42,.95,.3);nz('highpass',2500,.7,.12,.012)}
+ else if(k=='snare'){tn_('triangle',200,130,.4,.12);nz('bandpass',1900,.9,.5,.18);nz('highpass',4200,.7,.12,.1)}
+ else if(k=='tom'){tn_('sine',150,80,.75,.32);nz('bandpass',800,1,.1,.05)}
+ else if(k=='crash')nz('highpass',5500,.7,.3,.7);
+ else nz('highpass',8500,.7,.22,.055)}
 const note=(e,q,at)=>e.k?drum(e.k,at):(e.i?I.m:I.p).play(e.m,at||ctx.currentTime,{duration:Math.max(.25,e.d*q),gain:.7});
 const stopMel=w=>{S.node&&S.node.stop(w||ctx.currentTime+.04);S.node=null};
 function mel0(x,at){stopMel(at);S.cm=x.m;S.cx=x;S.node=I.t.play(pm(x),at||ctx.currentTime,{gain:1.4});S.melEnd=x.s+x.d}
@@ -190,7 +199,7 @@ function parse(x){const d=new DOMParser().parseFromString(x,'text/xml'),NS={};
  d.querySelectorAll('score-part').forEach(p=>NS[p.getAttribute('id')]=p.querySelector('part-name')?.textContent||'');
  const MU={};d.querySelectorAll('midi-instrument').forEach(m=>{const u=m.querySelector('midi-unpitched');if(u)MU[m.getAttribute('id')]=+u.textContent});
  const tm=d.querySelector('time'),b=tm?+tm.querySelector('beats').textContent:4,bt=tm?+tm.querySelector('beat-type').textContent:4,bq=bt==8&&b%3==0?1.5:4/bt;let ms=[0];
- const parts=[...d.querySelectorAll('part')].map((p,pi)=>{const name=NS[p.getAttribute('id')]||'Stimme',kind=/hi-?hat/i.test(name)?'hat':/feld|snare|side/i.test(name)?'snare':'tom';
+ const parts=[...d.querySelectorAll('part')].map((p,pi)=>{const name=NS[p.getAttribute('id')]||'Stimme',kind=/hi-?hat/i.test(name)?'hat':/feld|snare|side/i.test(name)?'snare':/gro(ß|ss)e|bass/i.test(name)?'kick':'tom';
   let dv=1,t=0,ls=0,mx=0,ev=[],last={},dr=0,pt=0,m0=[],tb=new Set(),tg={},tn={};
   p.querySelectorAll(':scope>measure').forEach(m=>{m0.push(t);mx=t;
    for(const e of m.children){const g=q=>e.querySelector(q),n=e.tagName;
@@ -200,7 +209,7 @@ function parse(x){const d=new DOMParser().parseFromString(x,'text/xml'),NS={};
     else if(n=='note'&&!g('grace')){const du=g('duration').textContent/dv,ch=g('chord'),st=ch?ls:t;if(!ch){ls=t;t+=du}mx=Math.max(mx,t);if(g('rest'))continue;if(tb.has(g('staff')?.textContent||'1')){const f=g('fret');if(f&&!g('tie[type=stop]')){const k=Math.round(st*1000);tg[k]=(tg[k]||'')+f.textContent;(tn[k]=tn[k]||{s:st,d:du,f:[]}).f.push([+(g('string')?.textContent||1),f.textContent])}continue}
      const pc=g('pitch');let mi=null,kk=0;if(pc){mi=({C:0,D:2,E:4,F:5,G:7,A:9,B:11})[pc.querySelector('step').textContent]+(+(pc.querySelector('alter')?.textContent||0))+12*(+pc.querySelector('octave').textContent+1);pt=1}else{dr=1;kk=MU[g('instrument')?.getAttribute('id')]||0}
      const o=last[mi];if(g('tie[type=stop]')&&o&&Math.abs(o.s+o.d-st)<1e-6){o.d+=du;continue}
-     const v={s:st,d:du,m:mi,k:kk?(kk<=36?'tom':kk<=40?'snare':[41,43,45,47,48,50].includes(kk)?'tom':'hat'):null};ev.push(v);last[mi]=v}}
+     const v={s:st,d:du,m:mi,k:kk?(kk<=36?'kick':kk<=40?'snare':[41,43,45,47,48,50].includes(kk)?'tom':[49,51,52,53,55,57,59].includes(kk)?'crash':'hat'):null};ev.push(v);last[mi]=v}}
    t=mx});
   if(!pi)ms=[...m0,t];const k=dr&&!pt?kind:null;ev.forEach(e=>{e.k=k&&(k!='tom'?k:(e.k||k));e.i=/marimba/i.test(name)});const tab=Object.keys(tg).length?Object.fromEntries(Object.entries(tg).map(([a,b])=>[a,[...new Set(b)].filter(c=>c>'0').sort().join('')||'0'])):null;return{name,ev,k,tab,tn:Object.values(tn),skip:/marimba/i.test(name)}});
  return{parts,ms,bq,end:ms[ms.length-1]}}
@@ -340,7 +349,7 @@ $('#mic').onclick=async()=>{if(mic){mic.getTracks().forEach(t=>t.stop());mic=nul
  $('#mic').textContent='Stoppen';const b=new Float32Array(4096);
  (function l(){if(!mic){$('#hz').textContent='– Hz';$('#nn').textContent='A = '+P.a4+' Hz';return}a.getFloatTimeDomainData(b);const f=pitch(b,ctx.sampleRate);
   if(f){sm=sm&&Math.abs(f/sm-1)<.06?sm*.7+f*.3:f;$('#hz').textContent=sm.toFixed(1)+' Hz';$('#nn').textContent=near(sm)}else sm=0;requestAnimationFrame(l)})()};
-function refs(){$('#refs').innerHTML=BASE.map((b,i)=>{const f=tf(P.ins,i);return`<button data-f="${f}">${tn(P.ins,i)}<small>${f.toFixed(1)} Hz</small></button>`}).join('')}
+function refs(){$('#refs').innerHTML=[['bar','Bariton'],['sop','Sopran']].map(([k,n])=>`<h3 style="margin:.9rem 0 .5rem">${n}</h3><div class="grid">`+BASE.map((b,i)=>{const f=tf(k,i);return`<button data-f="${f}">${tn(k,i)}<small>${f.toFixed(1)} Hz</small></button>`}).join('')+'</div>').join('')}
 let osc;$('#refs').onclick=async e=>{const b=e.target.closest('button');if(!b)return;ctx=ctx||new(window.AudioContext||webkitAudioContext)();await ctx.resume();
  const on=b.classList.contains('a');$$('#refs button').forEach(x=>x.classList.remove('a'));if(osc){osc.stop(ctx.currentTime+.05);osc=null}if(on)return;
  b.classList.add('a');const o=ctx.createOscillator(),g=ctx.createGain();o.frequency.value=+b.dataset.f;g.gain.value=.25;o.connect(g);g.connect(ctx.destination);o.start();osc=o};
@@ -359,13 +368,13 @@ $('#mgo').onclick=async()=>{if(M.on){clearInterval(M.id);M.on=0;$('#mgo').textCo
 // ---- Griff-Tabelle
 const tn=(k,i)=>P.nmo[k][i]||nm(BASE[i]+(k=='sop'?12:0)),tf=(k,i)=>P.fo[k][i]||frq(BASE[i]+(k=='sop'?12:0));
 const pm=x=>{const i=BASE.indexOf(x.m-off()),f=i<0?0:P.fo[P.ins][i];return f>0?69+12*Math.log2(f/(P.a4||432)):x.m};
-const near=f=>{let b=0,bd=1e9;BASE.forEach((_,i)=>{const d=Math.abs(Math.log2(f/tf(P.ins,i)));if(d<bd){bd=d;b=i}});return bd<.09?tn(P.ins,b):nm(Math.round(69+12*Math.log2(f/(P.a4||432))))};
+const near=f=>{let b=0,bk='bar',bd=1e9;for(const k of['bar','sop'])BASE.forEach((_,i)=>{const d=Math.abs(Math.log2(f/tf(k,i)));if(d<bd){bd=d;b=i;bk=k}});return bd<.09?tn(bk,b):nm(Math.round(69+12*Math.log2(f/(P.a4||432))))};
 function cfg(){let h=`<p class="mut">Ventil 3 = links, Ventil 1 = rechts. Griff z. B. 0, 1, 12, 123. Leere Felder = Standardwert.</p><label class="sl" style="max-width:10rem">Kammerton A (Hz)<input data-s="a4" type="number" step="0.1" value="${P.a4}"></label>`;
  [['sop','Sopran'],['bar','Bariton']].forEach(([k,n])=>{h+=`<h3>${n}</h3><div class="tb"><b>Ton</b><b>Hz</b><b>Griff</b>`+BASE.map((b,i)=>`<input data-k="${k}" data-i="${i}" data-r="n" value="${tn(k,i)}"><input data-k="${k}" data-i="${i}" data-r="f" type="number" step="0.1" value="${tf(k,i).toFixed(1)}"><input data-k="${k}" data-i="${i}" data-r="g" value="${P.g[k][i]}" inputmode="numeric">`).join('')+'</div>'});
  $('#cfgc').innerHTML=h+`<h3>Wertung im Play-Modus</h3><div class="row"><label>Toleranz (ms)<input data-s="tol" type="number" value="${P.tol}"></label><label>Halten (%)<input data-s="hold" type="number" value="${P.hold}"></label></div><p><button id="rs">Alles zurücksetzen</button></p>`}
 $('#cfg').onchange=e=>{const t=e.target,d=t.dataset;
  if(d.k){const k=d.k,i=+d.i;if(d.r=='g')t.value=P.g[k][i]=norm(t.value);else if(d.r=='n'){P.nmo[k][i]=t.value.trim();t.value=tn(k,i)}else{const v=+t.value;P.fo[k][i]=v>20?v:0;t.value=tf(k,i).toFixed(1)}}
- else if(d.s){P[d.s]=+t.value||P[d.s];if(d.s=='a4'){cfg();refs();$('#nn').textContent='A = '+P.a4+' Hz'}}save()};
+ else if(d.s){P[d.s]=+t.value||P[d.s];if(d.s=='a4'){cfg();refs();$('#nn').textContent='A = '+P.a4+' Hz'}}refs();save()};
 $('#cfg').onclick=e=>{if(e.target.id=='rs'){P.g={bar:[...DEF],sop:[...DEF]};P.nmo={bar:Array(8).fill(''),sop:Array(8).fill('')};P.fo={bar:Array(8).fill(0),sop:Array(8).fill(0)};P.a4=432;save();cfg();refs();$('#nn').textContent='A = 432 Hz'}};
 
 // ---- Start
@@ -373,26 +382,26 @@ function seg(id,k,f){const r=()=>$$('#'+id+' button').forEach(b=>b.classList.tog
 seg('mode','mode',stopAll);refs();cfg();
 let started=0;
 const FR=$('#free'),FS={node:null,cur:'',blow:0,sus:0};
-function freeUpdate(){const c=cb(),k=P.fi,i=P.g[k].indexOf(c),snd=(pr.size>0||FS.blow||FS.sus)&&i>=0;
+function freeUpdate(){const c=cb(),k=P.fi,i=P.g[k].indexOf(c),snd=(pr.size>0||FS.blow)&&i>=0;
  VB=VB||$$('#valves button');VB.forEach(b=>{setC(b,'on',pr.has(b.dataset.v));setC(b,'tgt',false);setC(b,'bad',false)});
  if(snd&&!(ctx&&I.t&&ctx.state=='running'))return;
- const key=snd?k+i:'';if(key===FS.cur)return;FS.cur=key;
- if(FS.node){FS.node.stop(ctx.currentTime+.03);FS.node=null}
+ const key=snd?k+i:'',now=performance.now();if(key!==FS.pk){FS.pk=key;FS.pt=now}
+ if(key===FS.cur||(key!==''&&now-FS.pt<28))return;FS.cur=key;
+ if(FS.node){FS.node.stop(ctx.currentTime+.005,.008);FS.node=null}
  if(snd){const f=tf(k,i);FS.node=I.t.play(69+12*Math.log2(f/(P.a4||432)),ctx.currentTime,{gain:1.4})}
  $('#fnote').textContent=snd?tn(k,i):'–';$('#finfo').textContent=snd?tf(k,i).toFixed(1)+' Hz · Griff '+P.g[k][i]:'Drücke die Ventile und probiere Töne aus'}
 FR.addEventListener('pointerdown',()=>{if(!ctx||!I.t||ctx.state!='running')aud().catch(()=>{})});
-const bl=$('#blow');bl.onpointerdown=e=>{e.preventDefault();FS.blow=1;bl.classList.add('on');bl.setPointerCapture(e.pointerId)};bl.onpointerup=bl.onpointercancel=()=>{FS.blow=0;bl.classList.remove('on')};
-$('#sus').onchange=e=>{FS.sus=e.target.checked?1:0;FS.cur='x'};
+const bl=$('#zero');bl.onpointerdown=e=>{e.preventDefault();FS.blow=1;bl.classList.add('on');bl.setPointerCapture(e.pointerId)};bl.onpointerup=bl.onpointercancel=()=>{FS.blow=0;bl.classList.remove('on')};
 seg('fseg','fi',()=>{FS.cur='x'});
 function show(t,push){$$('.tab').forEach(x=>x.classList.toggle('on',x.id==t));
  if(t!='play'&&S.run){S.run=0;stopMel();AU&&AU.pause();$('#go').textContent='▶'}
  if(t=='play'){if(!started){started=1;if(SL.length)open(SL[+$('#song').value||0])}else if(TV&&S.tabIdx<0)buildTab();lanesDirty()}
- if(t=='free'){$('#fvslot').appendChild($('#valves'));lanesDirty()}else{if(FS.node){FS.node.stop(ctx.currentTime+.03);FS.node=null;FS.cur=''}const v=$('#valves');if(v.parentNode.id=='fvslot'){$('#play').appendChild(v);lanesDirty()}}
+ if(t=='free'){$('#fvslot').insertBefore($('#valves'),$('#zero'));lanesDirty()}else{if(FS.node){FS.node.stop(ctx.currentTime+.03);FS.node=null;FS.cur=''}const v=$('#valves');if(v.parentNode.id=='fvslot'){$('#play').appendChild(v);lanesDirty()}}
  if(push){try{history.pushState({t},'')}catch{}}scrollTo(0,0)}
 $$('[data-go]').forEach(b=>b.onclick=()=>show(b.dataset.go,1));
 $$('.bk').forEach(b=>b.onclick=()=>{if(history.state&&history.state.t&&history.state.t!='home')history.back();else show('home')});
 addEventListener('popstate',e=>show(e.state&&e.state.t||'home'));
 try{history.replaceState({t:'home'},'')}catch{}
-(async()=>{try{const l=await(await fetch('songs/index.json')).json();SL=l;$('#song').innerHTML=l.map((s,i)=>`<option value="${i}">${s.title}</option>`).join('');$('#song').onchange=()=>open(SL[+$('#song').value]);if(started&&l.length)open(l[0])}catch{S.msg='songs/index.json fehlt'}})();
+(async()=>{try{const l=await(await fetch('songs/index.json')).json();SL=l;$('#song').innerHTML=l.map((s,i)=>`<option value="${i}">${s.title}</option>`).join('');$('#song').onchange=()=>open(SL[+$('#song').value]);if(started&&l.length)open(l[0])}catch{S.msg='Songliste nicht lesbar: songs/index.json prüfen (Kommas, Anführungszeichen)'}})();
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js');
 </script></body></html>

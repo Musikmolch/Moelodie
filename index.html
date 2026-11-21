@@ -91,6 +91,14 @@ details{background:linear-gradient(#1b2f4d,#14233a);box-shadow:0 3px 10px #0005}
 .tiles button{display:flex;flex-direction:column;align-items:center;gap:.6rem;padding:1.7rem .5rem;font-size:1.1rem;font-weight:700;border-radius:18px;border:1px solid #3a5885;background:linear-gradient(#22406b,#162a47);color:#eef2f8;box-shadow:0 6px 16px #0007}
 .tiles span{font-size:2.3rem;line-height:1.1}.tiles svg{color:var(--gold)}
 .hd{display:flex;align-items:center;gap:.7rem;margin-bottom:.8rem}.hd b{font:800 1.2rem system-ui;letter-spacing:.05em;color:var(--gold)}
+.sticker{display:block;margin:0 auto .6rem;width:min(52vw,210px);transform:rotate(-4deg);filter:drop-shadow(0 6px 10px #000a)}
+#free.on{display:flex;flex-direction:column;min-height:100dvh;gap:.7rem}
+#fdisp{flex:1;display:flex;flex-direction:column;justify-content:center;text-align:center;min-height:120px}
+#fnote{font:800 5.2rem/1 system-ui;color:var(--gold);text-shadow:0 2px 16px #e8a22c44}
+#finfo{color:var(--mut);margin-top:.5rem}
+#fvslot{margin-top:auto}
+#blow{font-weight:700;padding:.7rem 1.1rem;touch-action:none;user-select:none;-webkit-user-select:none}
+#blow.on{background:linear-gradient(#ffd887,#e8a22c);color:#241800}
 .bk{padding:.5rem .75rem;line-height:0;color:var(--gold);border-color:#e8a22c99;background:linear-gradient(#2a4469,#17283f)}
 #valves button{aspect-ratio:1/.98}
 #valves .vb{left:3%;right:3%;top:0;aspect-ratio:1/.78;border-radius:50%;display:grid;place-items:center;background:repeating-conic-gradient(#6f5116 0 2.4deg,#f3d886 2.4deg 4.8deg);box-shadow:0 0 0 2px #4f3810;transition:transform .05s}
@@ -110,12 +118,13 @@ details{background:linear-gradient(#1b2f4d,#14233a);box-shadow:0 3px 10px #0005}
 #valves .tgt{box-shadow:0 8px 14px #000a,0 0 0 4px var(--c),0 0 18px var(--c)}
 #valves button{--c:#e9b44c;color:#6b4a12}
 </style></head><body>
-<main id="home" class="tab on"><div class="hm"><div class="logo">Mölodie</div><p class="mut" style="margin:.3rem 0 0">Spielen · Stimmen · Takt halten</p>
- <div class="tiles"><button data-go="play"><span>🎺</span>Üben</button><button data-go="tuner"><svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v8a4 4 0 0 0 8 0V3M12 15v6"/></svg>Stimmgerät</button><button data-go="metro"><span>⏱</span>Metronom</button><button data-go="cfg"><span>⚙</span>Griffe</button></div></div></main>
+<main id="home" class="tab on"><div class="hm"><img class="sticker" src="moewe.png" alt="Möwe"><div class="logo">Mölodie</div><p class="mut" style="margin:.3rem 0 0">Spielen · Stimmen · Takt halten</p>
+ <div class="tiles"><button data-go="play"><span>🎺</span>Üben</button><button data-go="tuner"><svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v8a4 4 0 0 0 8 0V3M12 15v6"/></svg>Stimmgerät</button><button data-go="metro"><span>⏱</span>Metronom</button><button data-go="cfg"><span>⚙</span>Griffe</button><button data-go="free" style="grid-column:1/3"><span>🎶</span>Frei Schnauze</button></div></div></main>
 <main id="play" class="tab">
  <div class="row"><button class="bk" aria-label="Startseite"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg></button><select id="song"></select><select id="voice"></select></div>
  <div class="row"><div class="seg" id="mode"><button data-v="watch">Hören</button><button data-v="practise">Üben</button><button data-v="play">Mitspielen</button></div><details id="dt"><summary>Loops und Audio</summary><div class="pnl">
   <div class="row" style="margin:.2rem 0 .7rem"><label class="sw"><input type="checkbox" id="lp"><span>Loop</span></label><label class="sl">von Takt<input id="la" type="number" min="1" value="1"></label><label class="sl">bis Takt<input id="lb" type="number" min="1" value="8"></label></div>
+  <label class="sw" style="margin:.2rem 0 .7rem"><input type="checkbox" id="auto"><span>Tabulatur automatisch erzeugen (wenn keine vorhanden)</span></label>
   <label class="sw" style="margin:.2rem 0 .7rem"><input type="checkbox" id="stems"><span>Notenhälse in der Tabulatur</span></label>
   <div id="parts"></div></div></details></div>
  <div id="score"><div id="osmdc"></div><div id="tabv"></div><div id="tcur"></div></div>
@@ -123,6 +132,11 @@ details{background:linear-gradient(#1b2f4d,#14233a);box-shadow:0 3px 10px #0005}
  <div id="fwrap"><canvas id="fall"></canvas><div id="fb"><span id="tg"></span><b id="fr"></b></div></div>
  <div id="valves"><button data-v="3"><i class="sm"></i><i class="sd"></i><i class="vb"><b>3</b></i></button><button data-v="2"><i class="sm"></i><i class="sd"></i><i class="vb"><b>2</b></i></button><button data-v="1"><i class="sm"></i><i class="sd"></i><i class="vb"><b>1</b></i></button></div>
 </main>
+<main id="free" class="tab"><div class="hd"><button class="bk" aria-label="Startseite"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg></button><b>Frei Schnauze</b></div>
+ <div class="seg" id="fseg"><button data-v="sop">Sopran</button><button data-v="bar">Bariton</button></div>
+ <div id="fdisp"><div id="fnote">–</div><div id="finfo">Drücke die Ventile und probiere Töne aus</div></div>
+ <div class="row" style="justify-content:center;gap:1rem"><button id="blow">Blasen (für Griff 0)</button><label class="sw"><input type="checkbox" id="sus"><span>Dauerton</span></label><label class="sw"><span>🫱</span><input type="checkbox" id="hand2"><span>🫲</span></label></div>
+ <div id="fvslot"></div></main>
 <main id="tuner" class="tab"><div class="hd"><button class="bk" aria-label="Startseite"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg></button><b>Mölodie</b></div><div class="big" id="hz">– Hz</div><div id="nn">A = 432 Hz</div>
  <p style="text-align:center"><button id="mic">Mikrofon starten</button></p>
  <h3>Referenztöne</h3><div id="refs" class="grid"></div></main>
@@ -144,7 +158,7 @@ const BASE=[55,57,59,60,62,64,65,67],DEF=['0','1','2','12','3','13','23','123'];
 const NN=['C','Cis','D','Dis','E','F','Fis','G','Gis','A','B','H'],nm=m=>NN[m%12]+(Math.floor(m/12)-1),frq=m=>(P.a4||432)*2**((m-69)/12);
 const norm=s=>[...new Set(s.replace(/[^123]/g,''))].sort().join('')||'0';
 let P={};try{P=JSON.parse(localStorage.getItem('sch')||'{}')}catch{}
-P.g=P.g||{bar:[...DEF],sop:[...DEF]};if(P.v!=2){P.tol=300;P.v=2}P.tol=P.tol||300;P.hold=P.hold||70;P.ins=P.ins||'bar';P.mode=P.mode||'watch';P.hand=P.hand||'r';P.stems=P.stems!==false;P.nmo=P.nmo||{bar:Array(8).fill(''),sop:Array(8).fill('')};P.fo=P.fo||{bar:Array(8).fill(0),sop:Array(8).fill(0)};P.a4=P.a4||432;
+P.g=P.g||{bar:[...DEF],sop:[...DEF]};if(P.v!=2){P.tol=300;P.v=2}P.tol=P.tol||300;P.hold=P.hold||70;P.ins=P.ins||'bar';P.mode=P.mode||'watch';P.hand=P.hand||'r';P.stems=P.stems!==false;P.auto=P.auto!==false;P.fi=P.fi||'sop';P.nmo=P.nmo||{bar:Array(8).fill(''),sop:Array(8).fill('')};P.fo=P.fo||{bar:Array(8).fill(0),sop:Array(8).fill(0)};P.a4=P.a4||432;
 const save=()=>{try{localStorage.setItem('sch',JSON.stringify(P))}catch{}};
 const off=()=>P.ins=='sop'?12:0,grip=m=>{const i=BASE.indexOf(m-off());return i<0?null:P.g[P.ins][i]};
 const gr=n=>n.g||grip(n.m);
@@ -210,10 +224,10 @@ function fillVoices(){const c={};S.parts.forEach(p=>p.ev.length&&(c[p.name]=(c[p
  $('#voice').innerHTML=o.map(([p,i])=>`<option value="${i}">${p.name}${c[p.name]>1?' ('+(i+1)+')':''}</option>`).join('');
  const s=[...$('#voice').options].find(x=>x.text==P.voice);if(s)s.selected=true;pick()}
 function pick(){const v=$('#voice').value;stopAll();if(v===''){S.mel=[];return}
- S.sel=+v;P.ins=/^sopran/i.test(S.parts[S.sel].name.trim())?'sop':'bar';refs();S.mel=S.parts[S.sel].ev.map(e=>({...e})).sort((a,b)=>a.s-b.s);const tp=S.parts.find(p=>p.tab&&p.name==S.parts[S.sel].name);S.tabIdx=tp?S.parts.indexOf(tp):-1;if(tp)S.mel.forEach(n=>n.g=tp.tab[Math.round(n.s*1000)]);S.vis=S.parts.map((_,i)=>S.tabIdx<0&&i==S.sel);S.aud=S.parts.map((_,i)=>i!=S.sel);
+ S.sel=+v;P.ins=/^sopran/i.test(S.parts[S.sel].name.trim())?'sop':'bar';refs();S.mel=S.parts[S.sel].ev.map(e=>({...e})).sort((a,b)=>a.s-b.s);const tp=S.parts.find(p=>p.tab&&p.name==S.parts[S.sel].name);S.tabIdx=tp?S.parts.indexOf(tp):-1;if(tp)S.mel.forEach(n=>n.g=tp.tab[Math.round(n.s*1000)]);S.tv=S.tabIdx>=0||P.auto;S.vis=S.parts.map((_,i)=>!S.tv&&i==S.sel);S.aud=S.parts.map((_,i)=>i!=S.sel);
  S.acc=[];S.parts.forEach((q,i)=>q.skip||q.ev.forEach(e=>S.acc.push({...e,p:i})));S.acc.sort((a,b)=>a.s-b.s);buildParts();applyVis()}
-function buildParts(){$('#parts').innerHTML=S.parts.map((p,i)=>p.skip||p.tab?'':`<div class="pr"><span>${p.name}${p.tab?' (Tab)':''}</span><label><input type="checkbox" data-a="v" data-i="${i}" ${S.vis[i]?'checked':''} ${i==S.sel&&S.tabIdx<0?'disabled':''}> sichtbar</label><label><input type="checkbox" data-a="a" data-i="${i}" ${S.aud[i]||i==S.sel?'checked':''} ${i==S.sel?'disabled':''}> hörbar</label></div>`).join('')}
-function applyVis(){TV=S.tabIdx>=0&&!S.vis[S.sel];$('#score').classList.toggle('tv',TV);$('#osmdc').style.display=TV?'none':'';$('#tabv').style.display=TV?'block':'none';if(TV){buildTab();return}$('#tcur').style.display='none';lastOT=-1;$('#score').scrollTop=0;
+function buildParts(){$('#parts').innerHTML=S.parts.map((p,i)=>p.skip||p.tab?'':`<div class="pr"><span>${p.name}${p.tab?' (Tab)':''}</span><label><input type="checkbox" data-a="v" data-i="${i}" ${S.vis[i]?'checked':''} ${i==S.sel&&!S.tv?'disabled':''}> sichtbar</label><label><input type="checkbox" data-a="a" data-i="${i}" ${S.aud[i]||i==S.sel?'checked':''} ${i==S.sel?'disabled':''}> hörbar</label></div>`).join('')}
+function applyVis(){TV=S.tv&&!S.vis[S.sel];$('#score').classList.toggle('tv',TV);$('#osmdc').style.display=TV?'none':'';$('#tabv').style.display=TV?'block':'none';if(TV){buildTab();return}$('#tcur').style.display='none';lastOT=-1;$('#score').scrollTop=0;
  osmd.Sheet.Instruments.forEach((x,i)=>x.Visible=!!S.vis[i]&&!S.parts[i].tab);osmd.render();osmd.cursor.show();
  const c=osmd.cursor;c.reset();ts=[];pos=[];do{ts.push(c.Iterator.currentTimeStamp.RealValue*4);const el=c.cursorElement;pos.push([el.offsetLeft,el.offsetTop,el.offsetHeight]);c.next()}while(!c.Iterator.EndReached);c.reset();ci=0}
 $('#parts').onchange=e=>{const t=e.target,i=+t.dataset.i;if(t.dataset.a=='v'){S.vis[i]=t.checked;applyVis()}else S.aud[i]=t.checked};
@@ -273,8 +287,9 @@ $('#score').onclick=e=>{if(!pos.length||!S.mel.length)return;
   const len=S.ms[i+1]-S.ms[i],fr=Math.max(0,Math.min(1,(x-col*TG.mw-12)/(TG.mw-24)));let t=S.ms[i]+Math.round(fr*len*2)/2,b=-1,bd=14;
   pos.forEach((p,k)=>{const d=Math.abs(p[1]-row*TG.RH)>1?1e9:Math.abs(p[0]-x);if(d<bd){bd=d;b=k}});if(b>=0)t=ts[b];jump(Math.max(0,t));return}const sc=$('#score'),r=sc.getBoundingClientRect(),x=e.clientX-r.left+sc.scrollLeft,y=e.clientY-r.top+sc.scrollTop;let b=-1,bd=1e9;
  pos.forEach((p,i)=>{const dy=y<p[1]?p[1]-y:y>p[1]+p[2]?y-p[1]-p[2]:0,d=dy*4+Math.abs(x-p[0]);if(d<bd){bd=d;b=i}});if(b>=0)jump(ts[b])};
+function autoTab(){const o=[];for(const n of S.mel){const g=gr(n);if(!g)continue;const d=g=='0'?['0']:[...g];o.push({s:n.s,d:n.d,f:d.map((c,j)=>[3-(d.length-1-j),c])})}return o}
 let TG={per:1,mw:200,RH:90,rows:1,ty:27,sp:18},lastT=null,TO=0,lastOT=-1;
-function buildTab(){const tp=S.parts[S.tabIdx],sc=$('#score'),nM=S.ms.length-1,RH=Math.max(80,sc.clientHeight),z=Math.min(1.1,RH/100),ty=26*z,sp=24*z,fz=Math.max(19,21*z),N=[...tp.tn].sort((a,b)=>a.s-b.s);
+function buildTab(){const sc=$('#score'),nM=S.ms.length-1,RH=Math.max(80,sc.clientHeight),z=Math.min(1.1,RH/100),ty=26*z,sp=24*z,fz=Math.max(19,21*z),N=(S.tabIdx>=0?[...S.parts[S.tabIdx].tn]:autoTab()).sort((a,b)=>a.s-b.s);
  let g=4;for(let k=1;k<N.length;k++){const d=N[k].s-N[k-1].s;if(d>.12&&d<g)g=d}
  const len=(S.ms[Math.min(2,nM)]-S.ms[1])||(S.ms[1]-S.ms[0]),mw=Math.max(200,Math.min(640,24+len/g*22)),W=nM*mw;
  TG={per:nM,mw,RH,rows:1,ty,sp,W};lastT=null;TO=0;$('#tabv').style.transform='';let h='',i=0;ts=[];pos=[];
@@ -302,15 +317,15 @@ function draw(){sync();const q=60/(+$('#tempo').value*S.bq);fall(q);const M=S.me
  const tg=S.msg||'',fr=S.fb?S.fb[0]:(!S.run&&S.t<0&&S.mel.length?'Ins Notenbild tippen = Startpunkt':''),fc=S.fb?S.fb[1]:'';
  if(LS.tg!==tg){LS.tg=tg;$('#tg').textContent=tg}if(LS.fr!==fr){LS.fr=fr;$('#fr').textContent=fr}if(LS.fc!==fc){LS.fc=fc;$('#fr').className=fc}}
 setInterval(()=>{const n=performance.now(),dt=(n-lt)/1e3;lt=n;if(S.run)step(Math.min(dt,.1))},15);
-const PL=$('#play');(function raf(){if(PL.classList.contains('on'))draw();requestAnimationFrame(raf)})();
+const PL=$('#play');(function raf(){if(PL.classList.contains('on'))draw();else if(document.getElementById('free').classList.contains('on'))freeUpdate();requestAnimationFrame(raf)})();
 $('#go').onclick=async()=>{if(S.run){S.run=0;stopMel();AU&&AU.pause();$('#go').textContent='▶';return}if(!S.mel.length)return;
  try{await aud()}catch{return}
  if(S.t<0){S.pts=S.cnt=0;S.fb=null;let a=$('#lp').checked?S.ms[Math.max(0,+$('#la').value-1)]||0:0;if(P.mode=='practise'){const f=S.mel[idx(S.mel,a)];if(f)a=f.s;seek(a)}else seek(a>0?a:-1)}
  S.run=1;lt=performance.now();$('#go').textContent='⏸'};
 $('#stop').onclick=stopAll;
-const setHand=()=>{$('#valves').classList.toggle('lh',P.hand=='l');lanesDirty();$('#hand').checked=P.hand=='l'};
-$('#hand').onchange=e=>{P.hand=e.target.checked?'l':'r';save();setHand()};setHand();
-$('#stems').checked=P.stems;$('#nn').textContent='A = '+P.a4+' Hz';$('#stems').onchange=e=>{P.stems=e.target.checked;save();if(TV)buildTab()};
+const setHand=()=>{$('#valves').classList.toggle('lh',P.hand=='l');lanesDirty();$('#hand').checked=$('#hand2').checked=P.hand=='l'};
+$$('#hand,#hand2').forEach(h=>h.onchange=e=>{P.hand=e.target.checked?'l':'r';save();setHand()});setHand();
+$('#auto').checked=P.auto;$('#auto').onchange=e=>{P.auto=e.target.checked;save();if(S.parts.length)pick()};$('#stems').checked=P.stems;$('#nn').textContent='A = '+P.a4+' Hz';$('#stems').onchange=e=>{P.stems=e.target.checked;save();if(TV)buildTab()};
 $('#tempo').oninput=()=>$('#tnum').value=$('#tempo').value;$('#tempo').oninput();$('#tnum').onchange=e=>{const v=Math.max(25,Math.min(150,+e.target.value||100));$('#tempo').value=v;e.target.value=v};
 
 // ---- Stimmgerät
@@ -357,9 +372,22 @@ $('#cfg').onclick=e=>{if(e.target.id=='rs'){P.g={bar:[...DEF],sop:[...DEF]};P.nm
 function seg(id,k,f){const r=()=>$$('#'+id+' button').forEach(b=>b.classList.toggle('a',b.dataset.v==P[k]));r();$$('#'+id+' button').forEach(b=>b.onclick=()=>{P[k]=b.dataset.v;save();r();f()})}
 seg('mode','mode',stopAll);refs();cfg();
 let started=0;
+const FR=$('#free'),FS={node:null,cur:'',blow:0,sus:0};
+function freeUpdate(){const c=cb(),k=P.fi,i=P.g[k].indexOf(c),snd=(pr.size>0||FS.blow||FS.sus)&&i>=0;
+ VB=VB||$$('#valves button');VB.forEach(b=>{setC(b,'on',pr.has(b.dataset.v));setC(b,'tgt',false);setC(b,'bad',false)});
+ if(snd&&!(ctx&&I.t&&ctx.state=='running'))return;
+ const key=snd?k+i:'';if(key===FS.cur)return;FS.cur=key;
+ if(FS.node){FS.node.stop(ctx.currentTime+.03);FS.node=null}
+ if(snd){const f=tf(k,i);FS.node=I.t.play(69+12*Math.log2(f/(P.a4||432)),ctx.currentTime,{gain:1.4})}
+ $('#fnote').textContent=snd?tn(k,i):'–';$('#finfo').textContent=snd?tf(k,i).toFixed(1)+' Hz · Griff '+P.g[k][i]:'Drücke die Ventile und probiere Töne aus'}
+FR.addEventListener('pointerdown',()=>{if(!ctx||!I.t||ctx.state!='running')aud().catch(()=>{})});
+const bl=$('#blow');bl.onpointerdown=e=>{e.preventDefault();FS.blow=1;bl.classList.add('on');bl.setPointerCapture(e.pointerId)};bl.onpointerup=bl.onpointercancel=()=>{FS.blow=0;bl.classList.remove('on')};
+$('#sus').onchange=e=>{FS.sus=e.target.checked?1:0;FS.cur='x'};
+seg('fseg','fi',()=>{FS.cur='x'});
 function show(t,push){$$('.tab').forEach(x=>x.classList.toggle('on',x.id==t));
  if(t!='play'&&S.run){S.run=0;stopMel();AU&&AU.pause();$('#go').textContent='▶'}
- if(t=='play'){if(!started){started=1;if(SL.length)open(SL[+$('#song').value||0])}lanesDirty()}
+ if(t=='play'){if(!started){started=1;if(SL.length)open(SL[+$('#song').value||0])}else if(TV&&S.tabIdx<0)buildTab();lanesDirty()}
+ if(t=='free'){$('#fvslot').appendChild($('#valves'));lanesDirty()}else{if(FS.node){FS.node.stop(ctx.currentTime+.03);FS.node=null;FS.cur=''}const v=$('#valves');if(v.parentNode.id=='fvslot'){$('#play').appendChild(v);lanesDirty()}}
  if(push){try{history.pushState({t},'')}catch{}}scrollTo(0,0)}
 $$('[data-go]').forEach(b=>b.onclick=()=>show(b.dataset.go,1));
 $$('.bk').forEach(b=>b.onclick=()=>{if(history.state&&history.state.t&&history.state.t!='home')history.back();else show('home')});

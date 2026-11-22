@@ -408,10 +408,16 @@ function pitch(b,sr,th){let r=0;for(let i=0;i<b.length;i++)r+=b[i]*b[i];if(Math.
  for(let t=1;t<=mx+1;t++){let x=0;for(let i=0;i<N;i++){const c=b[i]-b[i+t];x+=c*c}s+=x;d[t]=x*t/s}
  for(let t=mn;t<=mx;t++)if(d[t]<.15){while(t+1<=mx&&d[t+1]<d[t])t++;const a=d[t-1],c=d[t+1],p=(a-c)/(2*(a-2*d[t]+c)||1);return sr/(t+p)}return 0}
 // ---- Mikrofon-Modul (gemeinsam für Stimmgerät, Zuhören und Test)
-const MIC={s:null,p:null,a:null,src:null,b:null,sm:0,rms:0,hp:null,u:new Set()},micThr=()=>.05*Math.pow(.04,P.li.sens/100);
-async function micAcquire(k){MIC.u.add(k);if(!MIC.p)MIC.p=(async()=>{try{MIC.s=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}})}catch{MIC.s=null;return false}
+const MIC={err:'',s:null,p:null,a:null,src:null,b:null,sm:0,rms:0,hp:null,u:new Set()},micThr=()=>.05*Math.pow(.04,P.li.sens/100);
+async function micAcquire(k){MIC.u.add(k);if(!MIC.p)MIC.p=(async()=>{try{MIC.s=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}})}catch(e){MIC.err=(e&&e.name)||'';MIC.s=null;return false}
   ctx=ctx||new(window.AudioContext||webkitAudioContext)();await ctx.resume();MIC.a=ctx.createAnalyser();MIC.a.fftSize=4096;MIC.src=ctx.createMediaStreamSource(MIC.s);MIC.src.connect(MIC.a);MIC.b=new Float32Array(4096);return true})();
  const ok=await MIC.p;if(!ok){MIC.u.delete(k);MIC.p=null}return ok}
+function micErr(){let framed=false;try{framed=window.top!==window}catch{framed=true}
+ if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)return framed?'Diese eingebettete Ansicht erlaubt kein Mikrofon. Öffne die App direkt über ihre Internet-Adresse oder als installierte App.':'Dieses Gerät erlaubt hier kein Mikrofon. Die Seite muss über https geöffnet sein.';
+ if(MIC.err=='NotFoundError'||MIC.err=='OverconstrainedError')return 'Es wurde kein Mikrofon gefunden.';
+ if(MIC.err=='NotReadableError')return 'Das Mikrofon wird gerade von einer anderen App benutzt.';
+ if(framed)return 'Die eingebettete Vorschau sperrt das Mikrofon und fragt auch nicht nach. Öffne die App direkt über ihre Internet-Adresse oder als installierte App.';
+ return 'Das Mikrofon ist für diese Seite gesperrt. Erlaube es in den Einstellungen von Browser oder Handy (Website-Einstellungen, Mikrofon) und lade die Seite neu.'}
 function micRelease(k){MIC.u.delete(k);if(MIC.u.size||!MIC.s)return;MIC.s.getTracks().forEach(t=>t.stop());try{MIC.src.disconnect()}catch{}MIC.s=MIC.a=MIC.src=MIC.p=null;MIC.sm=MIC.rms=0}
 function micRead(){if(!MIC.a)return null;MIC.a.getFloatTimeDomainData(MIC.b);const b=MIC.b;let r=0;for(let i=0;i<b.length;i++)r+=b[i]*b[i];MIC.rms=Math.sqrt(r/b.length);
  const th=micThr(),f=MIC.rms<th?0:pitch(b,ctx.sampleRate,th);if(f)MIC.sm=MIC.sm&&Math.abs(f/MIC.sm-1)<.06?MIC.sm*.7+f*.3:f;else MIC.sm=0;return{f:MIC.sm,raw:f,rms:MIC.rms}}
@@ -419,7 +425,7 @@ function nearestTone(f,k){let b=null;for(let i=0;i<8;i++){const c=1200*Math.log2
 const toneTxt=(f,k)=>{const n=nearestTone(f,k);return{n,t:tn(k,n.i)+' · '+(n.c>=0?'+':'')+Math.round(n.c)+' Cent · Griff '+P.g[k][n.i]}};
 let tOn=0;
 $('#mic').onclick=async()=>{if(tOn){tOn=0;micRelease('t');$('#mic').textContent='Mikrofon starten';$('#hz').textContent='– Hz';$('#nn').textContent='A = '+P.a4+' Hz';return}
- if(!await micAcquire('t')){$('#hz').textContent='Kein Zugriff';return}
+ if(!await micAcquire('t')){$('#hz').textContent='Kein Zugriff';$('#nn').textContent=micErr();return}
  tOn=1;$('#mic').textContent='Stoppen';
  (function l(){if(!tOn)return;const r=micRead();if(r&&r.raw){$('#hz').textContent=r.f.toFixed(1)+' Hz';$('#nn').textContent=near(r.f)}requestAnimationFrame(l)})()};
 function refs(){$('#refs').innerHTML=[['bar','Bariton'],['sop','Sopran']].map(([k,n])=>`<h3 style="margin:.9rem 0 .5rem">${n}</h3><div class="grid">`+BASE.map((b,i)=>{const f=tf(k,i);return`<button data-f="${f}">${tn(k,i)}<small>${f.toFixed(1)} Hz</small></button>`}).join('')+'</div>').join('')}
@@ -509,13 +515,13 @@ async function hpTest(){if(!await micAcquire('hp'))return null;await ctx.resume(
  const base=await smp(400),o=ctx.createOscillator(),g=ctx.createGain(),t=ctx.currentTime;o.frequency.value=F;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.1,t+.05);o.connect(g);g.connect(ctx.destination);o.start();
  await new Promise(r=>setTimeout(r,150));const tone=await smp(500);g.gain.linearRampToValueAtTime(0,ctx.currentTime+.05);o.stop(ctx.currentTime+.1);micRelease('hp');
  MIC.hp=tone>Math.max(base*5,.0015)?'speaker':'phones';return MIC.hp}
-$('#lhp').onclick=async()=>{const b=$('#lhp');b.disabled=true;b.textContent='Teste …';const r=await hpTest();b.disabled=false;b.textContent='Kopfhörer-Test';if(r===null)$('#hps').textContent='Kein Zugriff auf das Mikrofon';else hpUI()};
+$('#lhp').onclick=async()=>{const b=$('#lhp');b.disabled=true;b.textContent='Teste …';const r=await hpTest();b.disabled=false;b.textContent='Kopfhörer-Test';if(r===null)$('#hps').textContent=micErr();else hpUI()};
 $('#lhpm').onchange=e=>{P.li.hpm=e.target.checked;save();hpUI()};
 try{navigator.mediaDevices.addEventListener('devicechange',()=>{MIC.hp=null;hpUI()})}catch{}
 let LKY='sop',LTT=0;
 $$('#lk button').forEach(b=>b.onclick=()=>{LKY=b.dataset.v;$$('#lk button').forEach(x=>x.classList.toggle('a',x==b))});
 function ltStop(){if(!LTT)return;LTT=0;micRelease('lt');$('#lt').textContent='Mikrofon starten';$('#lm').style.width='0';$('#lread').textContent='–';$('#linfo').textContent=''}
-$('#lt').onclick=async()=>{if(LTT){ltStop();return}if(!await micAcquire('lt')){$('#linfo').textContent='Kein Zugriff auf das Mikrofon';return}
+$('#lt').onclick=async()=>{if(LTT){ltStop();return}if(!await micAcquire('lt')){$('#linfo').textContent=micErr();return}
  LTT=1;$('#lt').textContent='Stoppen';(function l(){if(!LTT)return;const r=micRead();if(r){$('#lm').style.width=Math.min(100,r.rms*500)+'%';
   if(r.raw){const x=toneTxt(r.f,LKY);$('#lread').textContent=tn(LKY,x.n.i);$('#linfo').textContent=r.f.toFixed(1)+' Hz · '+x.t.split(' · ').slice(1).join(' · ')+(x.n.ok?' ✓':' – außerhalb der Toleranz')}else{$('#lread').textContent='–';$('#linfo').textContent='Spiele einen Ton'}}requestAnimationFrame(l)})()};
 const LS_=[['ltol','tol',v=>'± '+v+' Cent'],['lhold','hold',v=>v+' ms'],['lsens','sens',v=>v+' %'],['llat','lat',v=>v+' ms']];
@@ -529,7 +535,7 @@ function lhInfo(){const e=$('#lhs');if(!e)return;e.textContent=S.listen?(hasPhon
 function lhLoop(){if(LHH)return;LHH=1;(function l(){if(!S.listen||!MIC.s||!$('#play').classList.contains('on')){LHH=0;return}const r=micRead();
  if(r){$('#lhm').style.width=Math.min(100,r.rms*500)+'%';const k=P.ins=='sop'?'sop':'bar';$('#lhn').textContent=r.raw?toneTxt(r.f,k).t:'–'}requestAnimationFrame(l)})()}
 async function setListen(on){S.listen=!!on;$('#lison').checked=S.listen;$('#lh').hidden=!S.listen;
- if(S.listen){if(!await micAcquire('play')){S.listen=false;$('#lison').checked=false;$('#lh').hidden=true;alert('Kein Zugriff auf das Mikrofon. Bitte erlaube das Mikrofon für diese Seite.');return}lhInfo();lhLoop()}else micRelease('play')}
+ if(S.listen){if(!await micAcquire('play')){S.listen=false;$('#lison').checked=false;$('#lh').hidden=true;$('#lh').hidden=false;$('#lhm').style.width='0';$('#lhn').textContent='';$('#lhs').textContent=micErr();return}lhInfo();lhLoop()}else micRelease('play')}
 function lisPause(){if(S.listen)micRelease('play')}
 function lisResume(){if(S.listen){micAcquire('play').then(ok=>{if(ok){lhInfo();lhLoop()}})}}
 function listenSync(){const ak=P.ins=='akk';$('#lison').disabled=ak;$('#lisw').classList.toggle('off',ak);$('#lisw').title=ak?'Für die Akkord-Stimme noch nicht verfügbar':'';if(ak&&S.listen)setListen(false)}

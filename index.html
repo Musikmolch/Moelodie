@@ -203,7 +203,9 @@ const chV=i=>{let l=-1;return chP(i).map((p,j)=>{let m=j?l+1:47;while(m%12!=p||m
 const chI=ms=>{const ps=new Set(ms.map(m=>((m%12)+12)%12));let b=-1,bs=0;for(let i=0;i<8;i++){const q=new Set(chP(i));let h=0;ps.forEach(p=>q.has(p)&&h++);const sc=h*10-(ps.size-h)*3-(q.size-h)*3;if(h>=2&&(b<0||sc>bs)){b=i;bs=sc}}return b};
 const off=()=>P.ins=='sop'?12:0,grip=m=>{const i=BASE.indexOf(m-off());return i<0?null:P.g[P.ins][i]};
 const gr=n=>n.g||grip(n.m);
-const pr=new Set(),cb=()=>[...pr].sort().join('')||'0';
+const pr=new Set(),LH={g:null,cand:null,since:0,t:0,on:0},LIS=()=>S.listen&&P.ins!='akk',
+ cbp=()=>[...pr].sort().join('')||'0',cb=()=>LIS()?(LH.g||'-'):cbp(),
+ ipHas=v=>LIS()?!!(LH.g&&LH.g!='0'&&LH.g.includes(v)):pr.has(v);
 let ctx,I={},NB=null,SMP={},ts=[],ci=0,lt=performance.now(),AU=null,SL=[],pos=[],TV=0,tcSet=0;
 const S={parts:[],ms:[0],bq:1.5,mel:[],acc:[],vis:[],aud:[],t:-1,run:0,mi:0,ai:0,pts:0,cnt:0,node:null,melEnd:0,cm:0,fb:null,msg:'',end:0};
 const osmd=new opensheetmusicdisplay.OpenSheetMusicDisplay('osmdc',{autoResize:false,drawTitle:false,drawPartNames:false,followCursor:false});
@@ -234,7 +236,7 @@ function drum(k,at){const n=at||ctx.currentTime,V=.32;
 const note=(e,q,at)=>e.k?drum(e.k,at):(e.i?I.m:I.p).play(e.m,at||ctx.currentTime,{duration:Math.max(.25,e.d*q),gain:.7});
 const stopMel=w=>{S.node&&S.node.stop(w||ctx.currentTime+.04);S.node=null};
 function chordPlay(ms,at,g){const n=ms.map(m=>I.p.play(m,at,{sustain:1,gain:g||.5}));return{stop(x,k){n.forEach(a=>a.stop(x,k))}}}
-function mel0(x,at){stopMel(at);S.cm=x.m;S.cx=x;const t=at||ctx.currentTime;S.node=x.ci!=null&&x.ci>=0?chordPlay(chV(x.ci),t):I.t.play(pm(x),t,{gain:1.4});S.melEnd=x.s+x.d}
+function mel0(x,at){stopMel(at);S.cm=x.m;S.cx=x;const t=at||ctx.currentTime;S.node=LIS()?null:x.ci!=null&&x.ci>=0?chordPlay(chV(x.ci),t):I.t.play(pm(x),t,{gain:1.4});S.melEnd=x.s+x.d}
 
 // ---- MusicXML lesen
 function parse(x){const d=new DOMParser().parseFromString(x,'text/xml'),NS={};
@@ -328,7 +330,7 @@ function step(dt){const q=60/(+$('#tempo').value*S.bq),m=P.mode,tq=P.tol/1e3/q,m
  else playStep(nt,dt/q,tq,q);
  if(S.node&&(nt>=S.melEnd||(m=='play'&&!S.cx.full&&gr(S.cx)!=cb())))stopMel();
  let lim=nt+.12/q;if(m=='practise'&&mel[S.mi])lim=Math.min(lim,mel[S.mi].s);if($('#lp').checked)lim=Math.min(lim,S.ms[Math.max(1,Math.min(+$('#lb').value,S.ms.length-1))]-1e-6);
- while(S.acc[S.ai]&&S.acc[S.ai].s<=lim){const e=S.acc[S.ai++];if(S.aud[e.p]&&!AU)note(e,q,ctx.currentTime+Math.max(0,(e.s-nt)*q))}
+ while(S.acc[S.ai]&&S.acc[S.ai].s<=lim){const e=S.acc[S.ai++];if(S.aud[e.p]&&!AU&&(!LIS()||hasPhones()))note(e,q,ctx.currentTime+Math.max(0,(e.s-nt)*q))}
  if(AU){const p=S.ao+nt*60/(S.ab*S.bq);if(nt>S.t+1e-9&&p>=0){if(AU.paused||Math.abs(AU.currentTime-p)>.25)AU.currentTime=p;AU.playbackRate=+$('#tempo').value/S.ab;if(AU.paused)AU.play().catch(()=>{})}else AU.pause()}
  S.adv=nt>S.t+1e-9;S.tn=performance.now();S.t=nt;const lp=$('#lp').checked,A=S.ms[Math.max(0,Math.min(+$('#la').value,S.ms.length-1)-1)],B=S.ms[Math.max(1,Math.min(+$('#lb').value,S.ms.length-1))];
  if(lp&&B>A&&nt>=B)seek(A);else if(nt>S.end+.5)fin()}
@@ -341,7 +343,7 @@ function fall(q){const T=DT(),dpr=Math.min(devicePixelRatio||1,2),w=FC.clientWid
  const W=Math.round(w*dpr),H=Math.round(h*dpr);if(FC.width!=W||FC.height!=H){FC.width=W;FC.height=H}
  fx.setTransform(dpr,0,0,dpr,0,0);fx.clearRect(0,0,w,h);const L=lanes();
  const rr=(x,y,a,b,c)=>{fx.beginPath();fx.roundRect?fx.roundRect(x,y,a,b,c):fx.rect(x,y,a,b);fx.fill()};
- for(const v of['3','2','1']){fx.fillStyle=pr.has(v)?VC[v]+'44':laneC;rr(L[v][0]-L[v][1]/2,0,L[v][1],h,12)}
+ for(const v of['3','2','1']){fx.fillStyle=ipHas(v)?VC[v]+'44':laneC;rr(L[v][0]-L[v][1]/2,0,L[v][1],h,12)}
  const hy=h-4,la=2/q,pp=hy/la,c=cb();let an=null;fx.fillStyle=FK.line;fx.fillRect(0,h-3,w,2);
  for(let i=0;i<S.mel.length;i++){const n=S.mel[i];if(n.s>T+la)break;if(n.s+n.d<T)continue;const g=gr(n);if(!g)continue;
   const y1=hy-(n.s-T)*pp,y0=hy-(n.s+n.d-T)*pp,hh=Math.max(5,y1-y0-2),act=n.s<=T+1e-6,ok=act&&g==c;
@@ -349,10 +351,10 @@ function fall(q){const T=DT(),dpr=Math.min(devicePixelRatio||1,2),w=FC.clientWid
    if(act){fx.fillStyle=ok?FK.actok:FK.act;rr(x0-3,y0-2,x1-x0+6,hh+4,10)}fx.fillStyle=ok?FK.ok:FK.zero;rr(x0,y0+1,x1-x0,hh,8)}
   else for(const v of g){const x=L[v][0]-L[v][1]/2+2,ww=L[v][1]-4;if(act){fx.fillStyle=ok?FK.actok:FK.act;rr(x-3,y0-2,ww+6,hh+4,10)}fx.fillStyle=ok?FK.ok:(FK.bar||VC[v]);rr(x,y0+1,ww,hh,8)}
   if(act&&T<n.s+n.d-1e-6)an=[g,ok]}
- if(an){const cx=L[2][0],t=an[0]=='0'?'0 - loslassen':an[0],pw=Math.max(64,t.length*(an[0]=='0'?11:20)+30),y=hy-30;
+ if(an){const cx=L[2][0],t=an[0]=='0'?(LIS()?'0':'0 - loslassen'):an[0],pw=Math.max(64,t.length*(an[0]=='0'&&!LIS()?11:20)+30),y=hy-30;
   fx.textAlign='center';fx.textBaseline='middle';fx.fillStyle=FK.pill;rr(cx-pw/2,y-19,pw,38,19);
   fx.strokeStyle=an[1]?FK.pillok:FK.pillbd;fx.lineWidth=2;fx.beginPath();fx.roundRect?fx.roundRect(cx-pw/2,y-19,pw,38,19):fx.rect(cx-pw/2,y-19,pw,38);fx.stroke();
-  fx.font=an[0]=='0'?'700 17px system-ui':'800 26px system-ui';fx.fillStyle=an[1]?FK.pillok:FK.pilltx;fx.fillText(t,cx,y+1)}}
+  fx.font=an[0]=='0'&&!LIS()?'700 17px system-ui':'800 26px system-ui';fx.fillStyle=an[1]?FK.pillok:FK.pilltx;fx.fillText(t,cx,y+1)}}
 let drag=null;
 (()=>{const sc=$('#score');sc.addEventListener('pointerdown',e=>{if(TV&&!S.run)drag={x:e.clientX,o:TO,m:0}});
  sc.addEventListener('pointermove',e=>{if(drag){const d=e.clientX-drag.x;if(Math.abs(d)>6)drag.m=1;if(drag.m){TO=Math.max(0,Math.min(TG.W-sc.clientWidth,drag.o-d));$('#tabv').style.transform=`translate3d(${-TO}px,0,0)`}}});
@@ -390,7 +392,7 @@ function draw(){sync();const q=60/(+$('#tempo').value*S.bq);fall(q);const M=S.me
  let n=null,g=null;if(M.length){CN=Math.min(CN,M.length-1);while(CN>0&&M[CN-1].s+M[CN-1].d>S.t+1e-6)CN--;while(CN<M.length&&M[CN].s+M[CN].d<=S.t+1e-6)CN++;n=M[CN]||null;g=n?gr(n):null}
  const w=P.mode=='watch'&&S.run;if(n!==S.wn){S.wn=n;S.wt=performance.now()}
  const nx=n?M[CN+1]:null,g2=nx&&nx.s-S.t<=P.tol/1e3/q?gr(nx):'',okv=(g&&g!='0'?g:'')+(g2&&g2!='0'?g2:''),ev=!!(S.run&&n&&g&&S.t>=n.s-1e-6&&performance.now()-S.wt>120);
- VB.forEach(b=>{const v=b.dataset.v,t=!!(g&&g!='0'&&g.includes(v));setC(b,'on',pr.has(v)||!!(w&&t));setC(b,'tgt',!w&&t);setC(b,'bad',ev&&pr.has(v)&&!okv.includes(v))});
+ VB.forEach(b=>{const v=b.dataset.v,t=!!(g&&g!='0'&&g.includes(v));setC(b,'on',ipHas(v)||!!(w&&t));setC(b,'tgt',!w&&t);setC(b,'bad',ev&&ipHas(v)&&!okv.includes(v))});
  const tg=S.msg||'',fr=S.fb?S.fb[0]:(!S.run&&S.t<0&&S.mel.length?'Ins Notenbild tippen = Startpunkt':''),fc=S.fb?S.fb[1]:'';
  if(LS.tg!==tg){LS.tg=tg;$('#tg').textContent=tg}if(LS.fr!==fr){LS.fr=fr;$('#fr').textContent=fr}if(LS.fc!==fc){LS.fc=fc;$('#fr').className=fc}}
 setInterval(()=>{const n=performance.now(),dt=(n-lt)/1e3;lt=n;if(S.run)step(Math.min(dt,.1))},15);
@@ -539,10 +541,16 @@ $('#lcal').onclick=async()=>{const b=$('#lcal');b.disabled=true;b.textContent='M
   const th=Math.max(.002,Math.min(.05,m/n*3));P.li.sens=Math.round(Math.max(0,Math.min(100,100*Math.log(th/.05)/Math.log(.04))));$('#lsens').value=P.li.sens;$('#lsensv').textContent=P.li.sens+' %';save()}
  b.disabled=false;b.textContent='Raumrauschen messen'};
 // Schalter auf der Spielseite (im Panel „Loops und Audio“)
-async function setListen(on){S.listen=!!on;$('#lison').checked=S.listen;
- if(S.listen){if(!await micAcquire('play')){S.listen=false;$('#lison').checked=false;if(MIC.err!='Cancel')dlg(micErr(),'OK');return}}else micRelease('play')}
-function lisPause(){if(S.listen)micRelease('play')}
-function lisResume(){if(S.listen)micAcquire('play').then(ok=>{if(!ok){S.listen=false;$('#lison').checked=false}})}
+function lisLoop(){if(LH.on)return;LH.on=1;(function l(){if(!S.listen||!MIC.s||!$('#play').classList.contains('on')){LH.on=0;LH.g=null;LH.cand=null;return}
+ const now=performance.now();if(now-LH.t>=30){LH.t=now;const r=micRead();let c=null;
+  if(r&&r.raw){const k=P.ins=='sop'?'sop':'bar',lo=tf(k,0),hi=tf(k,7),n=nearestTone(r.f,k);c=n.ok&&r.f>lo*.8&&r.f<hi*1.25?P.g[k][n.i]:'?'}
+  if(c!==LH.cand){LH.cand=c;LH.since=now}
+  if(c===null){if(now-LH.since>90)LH.g=null}else if(now-LH.since>=P.li.hold)LH.g=c}
+ requestAnimationFrame(l)})()}
+async function setListen(on){S.listen=!!on;$('#lison').checked=S.listen;LH.g=null;LH.cand=null;
+ if(S.listen){if(!await micAcquire('play')){S.listen=false;$('#lison').checked=false;if(MIC.err!='Cancel')dlg(micErr(),'OK');return}lisLoop()}else micRelease('play')}
+function lisPause(){if(S.listen){micRelease('play');LH.g=null}}
+function lisResume(){if(S.listen)micAcquire('play').then(ok=>{if(!ok){S.listen=false;$('#lison').checked=false}else lisLoop()})}
 function listenSync(){const ak=P.ins=='akk';$('#lison').disabled=ak;$('#lisw').classList.toggle('off',ak);$('#lisw').title=ak?'Für die Akkord-Stimme noch nicht verfügbar':'';if(ak&&S.listen)setListen(false)}
 $('#lison').onchange=e=>setListen(e.target.checked);
 hpUI();
@@ -551,7 +559,7 @@ function seg(id,k,f){const r=()=>$$('#'+id+' button').forEach(b=>b.classList.tog
 seg('mode','mode',stopAll);refs();cfg();
 let started=0;
 const FR=$('#free'),FS={node:null,cur:'',blow:0,sus:0};
-function freeUpdate(){const c=cb(),k=P.fi,i=P.g[k].indexOf(c),snd=(pr.size>0||FS.blow)&&i>=0;
+function freeUpdate(){const c=cbp(),k=P.fi,i=P.g[k].indexOf(c),snd=(pr.size>0||FS.blow)&&i>=0;
  VB=VB||$$('#valves button');VB.forEach(b=>{setC(b,'on',pr.has(b.dataset.v));setC(b,'tgt',false);setC(b,'bad',false)});
  if(snd&&!(ctx&&I.t&&ctx.state=='running'))return;
  const key=snd?k+i:'',now=performance.now();if(key!==FS.pk){FS.pk=key;FS.pt=now}
